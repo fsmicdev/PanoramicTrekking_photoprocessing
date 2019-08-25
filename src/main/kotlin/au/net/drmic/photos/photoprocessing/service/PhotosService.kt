@@ -35,6 +35,10 @@ class PhotosService {
         return photosRepository.findByOwnerUserId(ownerUserId)
     }
 
+    fun retrievePhotoById(photoId: Long): Optional<Photos> {
+        return photosRepository.findById(photoId)
+    }
+
     fun saveFileUploadPhoto(imageOriginal: MultipartFile,
                             ownerUserId: Long,
                             datePhotoWasTaken: LocalDate,
