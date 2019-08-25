@@ -1,5 +1,6 @@
 package au.net.drmic.photos.photoprocessing.web.controller
 
+import au.net.drmic.photos.photoprocessing.repository.entity.Photos
 import au.net.drmic.photos.photoprocessing.service.PhotosService
 import com.fasterxml.jackson.annotation.JsonFormat
 import org.slf4j.Logger
@@ -10,13 +11,18 @@ import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDate
 
 @RestController
-class FilesUploadController {
+class PhotosFilesUploadController {
 
     @Autowired
     lateinit var photosService: PhotosService
 
     @Autowired
     lateinit var logger: Logger
+
+    @RequestMapping("/apis/photos/photo/{ownerUserId}", method = [ RequestMethod.GET ])
+    fun retrievePhotosByOwner(@PathVariable("ownerUserId", required = true) ownerUserId: Long): List<Photos> {
+        return photosService.retrievePhotosByOwner(ownerUserId)
+    }
 
     @RequestMapping("/apis/photos/photo", method = [ RequestMethod.POST ])
     fun uploadMultipartFile(@RequestParam("imageOriginal") imageOriginal: MultipartFile,

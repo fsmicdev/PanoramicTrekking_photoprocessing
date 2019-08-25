@@ -31,6 +31,10 @@ class PhotosService {
     @Autowired
     lateinit var logger: Logger
 
+    fun retrievePhotosByOwner(ownerUserId: Long): List<Photos> {
+        return photosRepository.findByOwnerUserId(ownerUserId)
+    }
+
     fun saveFileUploadPhoto(imageOriginal: MultipartFile,
                             ownerUserId: Long,
                             datePhotoWasTaken: LocalDate,
