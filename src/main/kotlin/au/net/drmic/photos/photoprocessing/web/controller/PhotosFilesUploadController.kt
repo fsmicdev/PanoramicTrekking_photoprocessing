@@ -2,7 +2,6 @@ package au.net.drmic.photos.photoprocessing.web.controller
 
 import au.net.drmic.photos.photoprocessing.repository.entity.Photos
 import au.net.drmic.photos.photoprocessing.service.PhotosService
-import com.fasterxml.jackson.annotation.JsonFormat
 import org.slf4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.format.annotation.DateTimeFormat
@@ -11,7 +10,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDate
-import java.util.*
 
 @RestController
 class PhotosFilesUploadController {
