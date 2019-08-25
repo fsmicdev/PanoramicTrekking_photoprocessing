@@ -3,8 +3,10 @@ package au.net.drmic.photos.photoprocessing.service
 import au.net.drmic.photos.photoprocessing.model.PhotoSize
 import au.net.drmic.photos.photoprocessing.repository.PhotosRepository
 import au.net.drmic.photos.photoprocessing.repository.entity.Photos
-import au.net.drmic.photos.photoprocessing.utility.KotLogger
+import com.fasterxml.jackson.annotation.JsonFormat
+import io.swagger.annotations.ApiModelProperty
 import org.imgscalr.Scalr
+import org.slf4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
@@ -18,45 +20,54 @@ import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.sql.Blob
+import java.time.LocalDate
 
 @Service
 class PhotosService {
 
-    val logger = KotLogger.logger<PhotosService>()
-
     @Autowired
     lateinit var photosRepository: PhotosRepository
 
-    fun saveFileUploadPhoto(imageOriginal: MultipartFile, ownerUserId: Long, datePhotoWasTaken: Date,
+    @Autowired
+    lateinit var logger: Logger
+
+    fun saveFileUploadPhoto(imageOriginal: MultipartFile,
+                            ownerUserId: Long,
+                            datePhotoWasTaken: LocalDate,
                             description: String): Photos {
         val photos = Photos()
 
+        val photoName = imageOriginal.originalFilename
+
+        val tmpOriginalUploadedImageFile = File(System.getProperty("java.io.tmpdir") + photoName)
+
+        val photoByteArray = imageOriginal.bytes
+
+        imageOriginal.transferTo(tmpOriginalUploadedImageFile)
+
         photos.ownerUserId = ownerUserId
-        photos.datePhotoWasTaken = java.sql.Date(datePhotoWasTaken.time)
-        photos.imageOriginal = SerialBlob(imageOriginal.bytes)
-        photos.imageCroppedStandard = scale(imageOriginal, PhotoSize.WXH_512X512)
-        photos.imageCroppedThumbnail = scale(imageOriginal, PhotoSize.WXH_128X128)
+        photos.datePhotoWasTaken = java.sql.Date.valueOf(datePhotoWasTaken)
+        photos.imageOriginal = SerialBlob(photoByteArray)
+        photos.imageCroppedStandard = scale(tmpOriginalUploadedImageFile, imageOriginal, PhotoSize.WXH_512X512)
+        photos.imageCroppedThumbnail = scale(tmpOriginalUploadedImageFile, imageOriginal, PhotoSize.WXH_128X128)
         photos.dateTimeUpdated = Timestamp(Date().time)
         photos.description = description
+
+        tmpOriginalUploadedImageFile.delete()
 
         return photosRepository.save(photos)
     }
 
-    fun scale(photoMultipartFile: MultipartFile, photoSize: PhotoSize): Blob {
-        val photoName = photoSize.toString() + photoMultipartFile.originalFilename
-        val photoType = photoName.substring(photoName.indexOf(".") + 1)
+    fun scale(tmpOriginalUploadedImageFile: File, photoMultipartFile: MultipartFile, photoSize: PhotoSize): Blob {
+        val photoNameWithSize = photoSize.toString() + photoMultipartFile.originalFilename
+        val photoType = photoNameWithSize.substring(photoNameWithSize.indexOf(".") + 1)
 
-        val tmpFile = File(photoName)
+        val originalBufferedImage : BufferedImage = ImageIO.read(tmpOriginalUploadedImageFile)
 
-        photoMultipartFile.transferTo(tmpFile)
-        val originalBufferedImage : BufferedImage = ImageIO.read(tmpFile)
-
-        val genCroppedFile = scale(originalBufferedImage, photoSize, photoName, photoType)
+        val genCroppedFile = scale(originalBufferedImage, photoSize, photoNameWithSize, photoType)
 
         val generatedBlob = SerialBlob(convertFileContentToBlob(genCroppedFile.path))
-        logger.info("Created blob " + generatedBlob + " for photoName[" + photoName + "] of photoType[" + photoType + "]")
-
-        tmpFile.delete()
+        logger.info(">>> Created blob " + generatedBlob + " for photoName[" + photoNameWithSize + "] of photoType[" + photoType + "]")
 
         return generatedBlob
     }
@@ -85,7 +96,7 @@ class PhotosService {
             scaledImage = image
         }
 
-        val transformedPhotoFile = File(photoSize.toString() + "_" + imageName)
+        val transformedPhotoFile = File(System.getProperty("java.io.tmpdir") + imageName)
 
         ImageIO.write(scaledImage, imageType, transformedPhotoFile)
 

@@ -8,7 +8,7 @@ import javax.persistence.Column
 import javax.persistence.Entity
 
 @Entity
-class Photos : JpaPersistCapable<Long>() {
+class Photos : JpaPersistCapable() {
 
     @Column(nullable = false)
     var ownerUserId: Long? = null

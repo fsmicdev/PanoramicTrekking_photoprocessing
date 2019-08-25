@@ -12,11 +12,12 @@
 	<artifactId>photoprocessing</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>photoprocessing</name>
-	<description>Photo processing (including uploading and transformation) microservice</description>
+	<description>Photo processing (including uploading and transformation) micro-service</description>
 
 	<properties>
 		<java.version>1.8</java.version>
 		<kotlin.version>1.2.71</kotlin.version>
+		<swagger.version>2.9.2</swagger.version>
 	</properties>
 
 	<dependencies>
@@ -71,6 +72,16 @@
 			<artifactId>imgscalr-lib</artifactId>
 			<version>4.2</version>
 		</dependency>
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+			<version>${swagger.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger-ui</artifactId>
+			<version>${swagger.version}</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -92,6 +103,7 @@
 						<plugin>spring</plugin>
 						<plugin>jpa</plugin>
 					</compilerPlugins>
+					<jvmTarget>1.8</jvmTarget>
 				</configuration>
 				<dependencies>
 					<dependency>
