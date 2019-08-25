@@ -46,13 +46,13 @@ class PhotosFilesUploadController {
                             //                   dataType = "java.lang.String", example = "2018-06-30")
                             @DateTimeFormat(pattern = "dd.MM.yyyy")
                             @RequestParam("datePhotoWasTaken") datePhotoWasTaken: LocalDate,
-                            @RequestParam(value = "description", required = false) description: String): String {
-        photosService.saveFileUploadPhoto(imageOriginal, ownerUserId, datePhotoWasTaken, description)
+                            @RequestParam(value = "description", required = false) description: String): ResponseEntity<Long> {
+        val photo = photosService.saveFileUploadPhoto(imageOriginal, ownerUserId, datePhotoWasTaken, description)
 
         var fileName = imageOriginal.getOriginalFilename()
 
         logger.info("File uploaded successfully! -> filename = " + fileName)
 
-        return "Uploaded: [" + fileName + "]"
+        return ResponseEntity.ok(photo.id)
     }
 }
