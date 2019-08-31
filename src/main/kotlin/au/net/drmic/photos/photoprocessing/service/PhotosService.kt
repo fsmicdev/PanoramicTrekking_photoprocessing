@@ -1,13 +1,13 @@
 package au.net.drmic.photos.photoprocessing.service
 
 import au.net.drmic.photos.photoprocessing.model.PhotoSize
+import au.net.drmic.photos.photoprocessing.model.PhotoType
 import au.net.drmic.photos.photoprocessing.repository.PhotosRepository
 import au.net.drmic.photos.photoprocessing.repository.entity.Photos
-import com.fasterxml.jackson.annotation.JsonFormat
-import io.swagger.annotations.ApiModelProperty
 import org.imgscalr.Scalr
 import org.slf4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.sql.Timestamp
@@ -39,7 +39,12 @@ class PhotosService {
         return photosRepository.findById(photoId)
     }
 
-    fun saveFileUploadPhoto(imageOriginal: MultipartFile,
+    fun updatePhoto(photo: Photos): Photos {
+        return photosRepository.save(photo)
+    }
+
+    fun saveFileUploadPhoto(photoType: PhotoType,
+                            imageOriginal: MultipartFile,
                             ownerUserId: Long,
                             datePhotoWasTaken: LocalDate,
                             description: String): Photos {
@@ -53,6 +58,7 @@ class PhotosService {
 
         imageOriginal.transferTo(tmpOriginalUploadedImageFile)
 
+        photos.photoType = photoType
         photos.ownerUserId = ownerUserId
         photos.datePhotoWasTaken = java.sql.Date.valueOf(datePhotoWasTaken)
         photos.imageOriginal = SerialBlob(photoByteArray)
@@ -75,7 +81,8 @@ class PhotosService {
         val genCroppedFile = scale(originalBufferedImage, photoSize, photoNameWithSize, photoType)
 
         val generatedBlob = SerialBlob(convertFileContentToBlob(genCroppedFile.path))
-        logger.info(">>> Created blob " + generatedBlob + " for photoName[" + photoNameWithSize + "] of photoType[" + photoType + "]")
+        logger.info(">>> Created blob " + generatedBlob + " for photoName[" + photoNameWithSize +
+                "] of photoType[" + photoType + "]")
 
         return generatedBlob
     }

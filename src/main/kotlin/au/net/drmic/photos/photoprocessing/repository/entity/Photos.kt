@@ -1,15 +1,14 @@
 package au.net.drmic.photos.photoprocessing.repository.entity;
 
+import au.net.drmic.photos.photoprocessing.model.PhotoType
 import au.net.drmic.photos.photoprocessing.repository.entity.support.JpaPersistCapable
 import com.fasterxml.jackson.annotation.JsonIgnore
 import java.sql.Blob
 import java.sql.Date
 import java.sql.Timestamp
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.Lob
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.util.*
+import javax.persistence.*
 
 @Entity
 class Photos : JpaPersistCapable() {
@@ -18,6 +17,10 @@ class Photos : JpaPersistCapable() {
     var ownerUserId: Long? = null
 
     lateinit var datePhotoWasTaken: Date
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    lateinit var photoType: PhotoType
 
     @JsonIgnore
     @Column(nullable = false)
