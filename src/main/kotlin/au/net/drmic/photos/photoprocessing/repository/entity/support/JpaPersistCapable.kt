@@ -1,14 +1,10 @@
 package au.net.drmic.photos.photoprocessing.repository.entity.support
 
-import org.springframework.data.util.ProxyUtils
-import java.io.Serializable
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
-import javax.persistence.MappedSuperclass
+import java.sql.Timestamp
+import javax.persistence.*
 
 /**
- * Class/pattern adapted from https://kotlinexpertise.com/hibernate-with-kotlin-spring-boot/
+ *
  */
 @MappedSuperclass
 abstract class JpaPersistCapable {
@@ -21,22 +17,30 @@ abstract class JpaPersistCapable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long = 0L
 
-    override fun equals(other: Any?): Boolean {
-        other ?: return false
+    @Column(nullable = false)
+    lateinit var dateTimeCreated: Timestamp
 
-        if (this === other) return true
+    @Column(nullable = false)
+    lateinit var dateTimeUpdated: Timestamp
 
-        if (javaClass != ProxyUtils.getUserClass(other)) return false
-
-        other as JpaPersistCapable // <*>
-
-        return if (null == this.id) false else this.id == other.id
-    }
+    override fun toString() = "Entity of type [${this.javaClass.name}] has id: [$id]"
 
     override fun hashCode(): Int {
-        return 31
+        var result = id.hashCode()
+        result = 31 * result + dateTimeCreated.hashCode()
+        return result
     }
 
-    override fun toString() = "Entity of type ${this.javaClass.name} with id: $id"
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as JpaPersistCapable
+
+        if (id != other.id) return false
+        if (dateTimeCreated != other.dateTimeCreated) return false
+
+        return true
+    }
 
 }

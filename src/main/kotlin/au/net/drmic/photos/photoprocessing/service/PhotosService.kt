@@ -4,10 +4,11 @@ import au.net.drmic.photos.photoprocessing.model.PhotoSize
 import au.net.drmic.photos.photoprocessing.model.PhotoType
 import au.net.drmic.photos.photoprocessing.repository.PhotosRepository
 import au.net.drmic.photos.photoprocessing.repository.entity.Photos
+import au.net.drmic.photos.photoprocessing.repository.entity.PhotosTag
+import au.net.drmic.photos.photoprocessing.repository.entity.Tag
 import org.imgscalr.Scalr
 import org.slf4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.sql.Timestamp
@@ -21,6 +22,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.sql.Blob
 import java.time.LocalDate
+import java.util.stream.Collectors
 
 @Service
 class PhotosService {
@@ -33,6 +35,41 @@ class PhotosService {
 
     fun retrievePhotosByOwner(ownerUserId: Long): List<Photos> {
         return photosRepository.findByOwnerUserId(ownerUserId)
+    }
+
+    /**
+     * Method will only return a photo if it matches ALL passed-in search tags.
+     * N.B. tagsToMatchOn must be a non-empty list, otherwise an empty list of photos will be returned.
+     * 
+     * @param tagsToMatchOn must be non-empty; photos matching returned by this method match all
+     * tagsToMatchOn passed-in
+     */
+    fun searchOwnerPhotosByTagFilter(ownerUserId: Long, tagsToMatchOn: List<String>): Set<Photos> {
+        val upperCaseTagsToSearchOn = tagsToMatchOn.map { it.toUpperCase() }
+
+        val matchingListPhotoTags = photosRepository.findUserPhotosByTags(ownerUserId, upperCaseTagsToSearchOn)
+
+        val numTagsToSearchOn = upperCaseTagsToSearchOn.size
+
+        if (numTagsToSearchOn > 0) {
+            val uniquePhotoTags = matchingListPhotoTags.stream().collect(Collectors.toSet())
+            val photos = uniquePhotoTags.stream().map(PhotosTag::photo).collect(Collectors.toSet())
+
+            var consolidatedPhotos = mutableSetOf<Photos>()
+
+            photos.forEach{
+                val photoTagsWords = it.getPhotoTags().stream().map(PhotosTag::tag).collect(Collectors.toSet()).
+                        stream().map(Tag::tagWord).collect(Collectors.toSet())
+
+                if (photoTagsWords.containsAll(upperCaseTagsToSearchOn)) {
+                    consolidatedPhotos.add(it)
+                }
+            }
+
+            return consolidatedPhotos
+        } else {
+            return mutableSetOf()
+        }
     }
 
     fun retrievePhotoById(photoId: Long): Optional<Photos> {
@@ -52,7 +89,8 @@ class PhotosService {
 
         val photoName = imageOriginal.originalFilename
 
-        val tmpOriginalUploadedImageFile = File(System.getProperty("java.io.tmpdir") + photoName)
+        val tmpOriginalUploadedImageFile =
+                File(System.getProperty("java.io.tmpdir") + photoName)
 
         val photoByteArray = imageOriginal.bytes
 
@@ -93,6 +131,7 @@ class PhotosService {
 
         return Files.readAllBytes(filePath)
     }
+
     /**
      * Adapted from
      * https://github.com/maltesander/java-image-scaling-thumbnail/blob/master/src/main/java/com/tutorialacademy/img/imgscalr/ImageScaler.java

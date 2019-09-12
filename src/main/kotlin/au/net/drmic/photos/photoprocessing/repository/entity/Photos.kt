@@ -5,7 +5,6 @@ import au.net.drmic.photos.photoprocessing.repository.entity.support.JpaPersistC
 import com.fasterxml.jackson.annotation.JsonIgnore
 import java.sql.Blob
 import java.sql.Date
-import java.sql.Timestamp
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.util.*
 import javax.persistence.*
@@ -61,9 +60,13 @@ class Photos : JpaPersistCapable() {
                 imageCroppedThumbnail.getBytes(0, imageOriginal.length().toInt())))
     }
 
-    @Column(nullable = false)
-    lateinit var dateTimeUpdated: Timestamp
-
     lateinit var description: String
+
+    @OneToMany(cascade = [(CascadeType.ALL)], fetch = FetchType.EAGER, mappedBy = "photo")
+    private val photoTags = mutableListOf<PhotosTag>()
+
+    fun getPhotoTags(): List<PhotosTag> {
+       return photoTags
+    }
 
 }
