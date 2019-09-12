@@ -42,16 +42,18 @@ class PhotosService {
      * N.B. tagsToMatchOn must be a non-empty list, otherwise an empty list of photos will be returned.
      * 
      * @param tagsToMatchOn must be non-empty; photos matching returned by this method match all
-     * tagsToMatchOn passed-in
+     * tagsToMatchOn passed-in.
      */
     fun searchOwnerPhotosByTagFilter(ownerUserId: Long, tagsToMatchOn: List<String>): Set<Photos> {
         val upperCaseTagsToSearchOn = tagsToMatchOn.map { it.toUpperCase() }
 
-        val matchingListPhotoTags = photosRepository.findUserPhotosByTags(ownerUserId, upperCaseTagsToSearchOn)
-
         val numTagsToSearchOn = upperCaseTagsToSearchOn.size
 
-        if (numTagsToSearchOn > 0) {
+        if (numTagsToSearchOn == 0) {
+            return mutableSetOf()
+        } else {
+            val matchingListPhotoTags = photosRepository.findUserPhotosByTags(ownerUserId, upperCaseTagsToSearchOn)
+
             val uniquePhotoTags = matchingListPhotoTags.stream().collect(Collectors.toSet())
             val photos = uniquePhotoTags.stream().map(PhotosTag::photo).collect(Collectors.toSet())
 
@@ -67,8 +69,6 @@ class PhotosService {
             }
 
             return consolidatedPhotos
-        } else {
-            return mutableSetOf()
         }
     }
 
