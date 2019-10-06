@@ -24,12 +24,15 @@ class PhotosProcessingController {
     @Autowired
     lateinit var logger: Logger
 
+    @ApiOperation("Retrieve all photos (including associated meta-data) of a particular user, looked-up " +
+                        "via the user's id.")
     @RequestMapping("/owner/{ownerUserId}", method = [ RequestMethod.GET ])
     fun retrievePhotosByOwner(@ApiParam("The user id of the photo's owner.")
                               @PathVariable("ownerUserId", required = true) ownerUserId: Long): List<Photos> {
         return photosService.retrievePhotosByOwner(ownerUserId)
     }
 
+    @ApiOperation("Retrieve an existing photo, including associated meta-data, via its id.")
     @RequestMapping("/{photoId}", method = [ RequestMethod.GET ])
     fun retrievePhotoById(@ApiParam("The id of the photo.")
                           @PathVariable("photoId", required = true) photoId: Long): ResponseEntity<Photos> {
@@ -42,13 +45,15 @@ class PhotosProcessingController {
         }
     }
 
+    @ApiOperation("Update an existing photo, including associated meta-data.")
     @RequestMapping("/", method = [ RequestMethod.PUT ])
     fun updatePhoto(@RequestBody photo: Photos): ResponseEntity<Photos> {
         return ResponseEntity.ok(photosService.updatePhoto(photo))
     }
 
-    @ApiOperation("Upload a raw photo file and associated meta-data. The photo will be transformed into a few " +
-                        "consistent sizes on the server, including thumbnail and 'standard' sizes.")
+    @ApiOperation("Upload a raw photo file and associated meta-data (including tag words). The photo will be " +
+                        "transformed into a few consistent sizes on the server, including thumbnail and " +
+                        "'standard' sizes.")
     @RequestMapping("/", method = [ RequestMethod.POST ])
     fun uploadMultipartFile(
             @ApiParam("The format type of the photo.")
