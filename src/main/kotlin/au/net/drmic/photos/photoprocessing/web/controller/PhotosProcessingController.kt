@@ -70,7 +70,7 @@ class PhotosProcessingController {
             @ApiParam("List of tags/keywords, which can be later searched on.")
             @RequestParam(value = "tags", required = false) tags: List<String>): ResponseEntity<Long> {
         val photo = photosService.saveFileUploadPhoto(
-                photoType, imageOriginal, ownerUserId, datePhotoWasTaken, description)
+                photoType, imageOriginal, ownerUserId, datePhotoWasTaken, description, tags)
 
         var fileName = imageOriginal.getOriginalFilename()
 

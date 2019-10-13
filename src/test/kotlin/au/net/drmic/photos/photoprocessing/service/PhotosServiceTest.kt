@@ -139,17 +139,20 @@ class PhotosServiceTest : FunSpec() {
                     mutableListOf(NON_EXISTING_TAG)) shouldBe emptySet()
         }
 
-        test("searchOwnerPhotosByTagFilter(..): Photos (more than one) returned for existing owner and a matching tag.") {
+        test("searchOwnerPhotosByTagFilter(..): Photos (more than one) returned for existing owner and " +
+                    "a matching tag.") {
             photosService.searchOwnerPhotosByTagFilter(1L,
                     mutableListOf(TAG_ONE)).size shouldBe 2
         }
 
-        test("searchOwnerPhotosByTagFilter(..): Photo (only one) returned for existing owner and another [single] matching tag.") {
+        test("searchOwnerPhotosByTagFilter(..): Photo (only one) returned for existing owner and another " +
+                    "[single] matching tag.") {
             photosService.searchOwnerPhotosByTagFilter(1L,
                     mutableListOf(TAG_TWO)).size shouldBe 1
         }
 
-        test("searchOwnerPhotosByTagFilter(..): Photo (only one) returned for existing owner and lowercase [converted to uppercase] matching tag.") {
+        test("searchOwnerPhotosByTagFilter(..): Photo (only one) returned for existing owner and " +
+                    "lowercase [converted to uppercase] matching tag.") {
             photosService.searchOwnerPhotosByTagFilter(1L,
                     mutableListOf(TAG_TWO.toLowerCase())).size shouldBe 1
         }
@@ -159,7 +162,8 @@ class PhotosServiceTest : FunSpec() {
                     mutableListOf(TAG_ONE, TAG_TWO)).size shouldBe 1
         }
 
-        test("searchOwnerPhotosByTagFilter(..): No photos returned for existing owner, two matching tags, and one non-matching tag.") {
+        test("searchOwnerPhotosByTagFilter(..): No photos returned for existing owner, two matching " +
+                    "tags, and one non-matching tag.") {
             photosService.searchOwnerPhotosByTagFilter(1L,
                     mutableListOf(TAG_ONE, TAG_TWO, NON_EXISTING_TAG)) shouldBe emptySet()
         }

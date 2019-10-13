@@ -31,6 +31,9 @@ class PhotosService {
     lateinit var photosRepository: PhotosRepository
 
     @Autowired
+    lateinit var tagService: TagService
+
+    @Autowired
     lateinit var logger: Logger
 
     fun retrievePhotosByOwner(ownerUserId: Long): List<Photos> {
@@ -84,8 +87,9 @@ class PhotosService {
                             imageOriginal: MultipartFile,
                             ownerUserId: Long,
                             datePhotoWasTaken: LocalDate,
-                            description: String): Photos {
-        val photos = Photos()
+                            description: String,
+                            tags: List<String>): Photos {
+        var photos = Photos()
 
         val photoName = imageOriginal.originalFilename
 
@@ -107,7 +111,11 @@ class PhotosService {
 
         tmpOriginalUploadedImageFile.delete()
 
-        return photosRepository.save(photos)
+        photos = photosRepository.save(photos)
+
+        val numTagsNewlyPersisted = tagService.saveTags(ownerUserId, tags, photos)
+
+        return photos
     }
 
     fun scale(tmpOriginalUploadedImageFile: File, photoMultipartFile: MultipartFile, photoSize: PhotoSize): Blob {
