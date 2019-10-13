@@ -38,10 +38,13 @@ class TagServiceTest : FunSpec() {
     @Autowired
     private lateinit var tagRepository: TagRepository
 
+    private var photoOne: Photos = Photos()
+    private var photoTwo: Photos = Photos()
+    private var photoThree: Photos = Photos()
+
     override fun beforeTest(testCase: TestCase) {
         val ownerUserId = 1L
 
-        var photoOne = Photos()
         photoOne.photoType = PhotoType.PNG
         photoOne.datePhotoWasTaken = Date(java.util.Date().time)
         photoOne.ownerUserId = ownerUserId
@@ -51,10 +54,8 @@ class TagServiceTest : FunSpec() {
         photoOne.imageCroppedStandard = SerialBlob(ByteArray(7000))
         photoOne.dateTimeCreated = Timestamp(java.util.Date().time)
         photoOne.dateTimeUpdated = Timestamp(java.util.Date().time)
-
         photoOne = photosRepository.save(photoOne)
 
-        var photoTwo = Photos()
         photoTwo.photoType = PhotoType.PNG
         photoTwo.datePhotoWasTaken = Date(java.util.Date().time)
         photoTwo.ownerUserId = ownerUserId
@@ -64,7 +65,6 @@ class TagServiceTest : FunSpec() {
         photoTwo.imageCroppedStandard = SerialBlob(ByteArray(8321))
         photoTwo.dateTimeCreated = Timestamp(java.util.Date().time)
         photoTwo.dateTimeUpdated = Timestamp(java.util.Date().time)
-
         photoTwo = photosRepository.save(photoTwo)
 
         val tagsForPhotoOne = mutableListOf<String>()
@@ -95,11 +95,33 @@ class TagServiceTest : FunSpec() {
             tagService.checkIfTagExistsForOwnerUser(1L, "Russia") shouldBe true
         }
 
-        /*
-        test("retrievePhotosByOwner(..): No photos returned for non-existing owner.") {
-            photosService.retrievePhotosByOwner(514L) shouldBe emptyList()
+        test("saveTags(..):  three new tags; count of 3 (new) tags should be returned.") {
+            val tagsForPhotoTwo = mutableListOf<String>()
+            tagsForPhotoTwo.add("ABC")
+            tagsForPhotoTwo.add("DEF")
+            tagsForPhotoTwo.add("GHI")
+
+            tagService.saveTags(1L, tagsForPhotoTwo, photoTwo) shouldBe 3
         }
 
+        test("saveTags(..):  two old tags AND zero new tags; count of 0 (new) tags should be returned.") {
+            val tagsForPhotoOne = mutableListOf<String>()
+            tagsForPhotoOne.add("RUSSIA")
+            tagsForPhotoOne.add("PALACE")
+
+            tagService.saveTags(1L, tagsForPhotoOne, photoOne) shouldBe 0
+        }
+
+        test("saveTags(..):  two old tags AND one new tags; count of 1 (new) tags should be returned.") {
+            val tagsForPhotoOne = mutableListOf<String>()
+            tagsForPhotoOne.add("RUSSIA")
+            tagsForPhotoOne.add("PALACE")
+            tagsForPhotoOne.add("NEWBIE")
+
+            tagService.saveTags(1L, tagsForPhotoOne, photoOne) shouldBe 1
+        }
+
+        /*
         test("retrievePhotosByOwner(..): Correct number of photos should be returned for existing owner.") {
             photosService.retrievePhotosByOwner(1L).size shouldBe 2
         }
