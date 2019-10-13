@@ -114,6 +114,10 @@ class PhotosService {
         photos = photosRepository.save(photos)
 
         val numTagsNewlyPersisted = tagService.saveTags(ownerUserId, tags, photos)
+        logger.debug(">>> Photo ( with id {} ) was uploaded and created with {} new tags for user with id {}.",
+                photos.id,
+                numTagsNewlyPersisted,
+                ownerUserId)
 
         return photos
     }
