@@ -121,46 +121,11 @@ class TagServiceTest : FunSpec() {
             tagService.saveTags(1L, tagsForPhotoOne, photoOne) shouldBe 1
         }
 
-        /*
-        test("retrievePhotosByOwner(..): Correct number of photos should be returned for existing owner.") {
-            photosService.retrievePhotosByOwner(1L).size shouldBe 2
-        }
+        test("saveTags(..):  no new or old tags; count of zero (new) tags should be returned.") {
+            val tagsForPhotoOne = mutableListOf<String>()
 
-        test("searchOwnerPhotosByTagFilter(..): No photos returned for non-existing owner.") {
-            photosService.searchOwnerPhotosByTagFilter(514L,
-                    mutableListOf(TAG_ONE)) shouldBe emptySet()
+            tagService.saveTags(1L, tagsForPhotoOne, photoOne) shouldBe 0
         }
-
-        test("searchOwnerPhotosByTagFilter(..): No photos returned for existing owner, but non-matching tag.") {
-            photosService.searchOwnerPhotosByTagFilter(1L,
-                    mutableListOf(NON_EXISTING_TAG)) shouldBe emptySet()
-        }
-
-        test("searchOwnerPhotosByTagFilter(..): Photos (more than one) returned for existing owner and a matching tag.") {
-            photosService.searchOwnerPhotosByTagFilter(1L,
-                    mutableListOf(TAG_ONE)).size shouldBe 2
-        }
-
-        test("searchOwnerPhotosByTagFilter(..): Photo (only one) returned for existing owner and another [single] matching tag.") {
-            photosService.searchOwnerPhotosByTagFilter(1L,
-                    mutableListOf(TAG_TWO)).size shouldBe 1
-        }
-
-        test("searchOwnerPhotosByTagFilter(..): Photo (only one) returned for existing owner and lowercase [converted to uppercase] matching tag.") {
-            photosService.searchOwnerPhotosByTagFilter(1L,
-                    mutableListOf(TAG_TWO.toLowerCase())).size shouldBe 1
-        }
-
-        test("searchOwnerPhotosByTagFilter(..): Photo returned for existing owner and two matching tags.") {
-            photosService.searchOwnerPhotosByTagFilter(1L,
-                    mutableListOf(TAG_ONE, TAG_TWO)).size shouldBe 1
-        }
-
-        test("searchOwnerPhotosByTagFilter(..): No photos returned for existing owner, two matching tags, and one non-matching tag.") {
-            photosService.searchOwnerPhotosByTagFilter(1L,
-                    mutableListOf(TAG_ONE, TAG_TWO, NON_EXISTING_TAG)) shouldBe emptySet()
-        }
-        */
     }
 
 }
