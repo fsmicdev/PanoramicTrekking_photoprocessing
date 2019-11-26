@@ -11,7 +11,6 @@ import org.slf4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
-import java.sql.Timestamp
 import java.util.*
 import javax.sql.rowset.serial.SerialBlob
 import javax.imageio.ImageIO
@@ -22,6 +21,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.sql.Blob
 import java.time.LocalDate
+import java.time.LocalTime
 import java.util.stream.Collectors
 
 @Service
@@ -100,13 +100,16 @@ class PhotosService {
 
         imageOriginal.transferTo(tmpOriginalUploadedImageFile)
 
+        val timeNow = LocalTime.now()
+
         photos.photoType = photoType
         photos.ownerUserId = ownerUserId
-        photos.datePhotoWasTaken = java.sql.Date.valueOf(datePhotoWasTaken)
-        photos.imageOriginal = SerialBlob(photoByteArray)
-        photos.imageCroppedStandard = scale(tmpOriginalUploadedImageFile, imageOriginal, PhotoSize.WXH_512X512)
-        photos.imageCroppedThumbnail = scale(tmpOriginalUploadedImageFile, imageOriginal, PhotoSize.WXH_128X128)
-        photos.dateTimeUpdated = Timestamp(Date().time)
+        photos.datePhotoWasTaken = LocalDate.now()
+        photos.setImageOriginal(SerialBlob(photoByteArray))
+        photos.setImageCroppedStandard(scale(tmpOriginalUploadedImageFile, imageOriginal, PhotoSize.WXH_512X512))
+        photos.setImageCroppedThumbnail(scale(tmpOriginalUploadedImageFile, imageOriginal, PhotoSize.WXH_128X128))
+        photos.dateTimeCreated = timeNow
+        photos.dateTimeUpdated = timeNow
         photos.description = description
 
         tmpOriginalUploadedImageFile.delete()

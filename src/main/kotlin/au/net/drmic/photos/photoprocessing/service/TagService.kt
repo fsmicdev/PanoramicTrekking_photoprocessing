@@ -8,6 +8,7 @@ import org.slf4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.sql.Timestamp
+import java.time.LocalTime
 import java.util.*
 
 @Service
@@ -33,11 +34,13 @@ class TagService {
             if ( ! isTagPreExisting ) {
                 val timestampNow = Timestamp(Date().time)
 
+                val timeNow = LocalTime.now()
+
                 val tag = Tag()
                 tag.ownerUserId = ownerUserId
                 tag.tagWord = trimmedTagUpperCase
-                tag.dateTimeCreated = timestampNow
-                tag.dateTimeUpdated = timestampNow
+                tag.dateTimeCreated = timeNow
+                tag.dateTimeUpdated = timeNow
 
                 tagRepository.save(tag)
 
@@ -45,8 +48,8 @@ class TagService {
                 val photosTag = PhotosTag()
                 photosTag.photo = photos
                 photosTag.tag = tag
-                photosTag.dateTimeCreated = timestampNow
-                photosTag.dateTimeUpdated = timestampNow
+                photosTag.dateTimeCreated = timeNow
+                photosTag.dateTimeUpdated = timeNow
 
                 photosTagService.save(photosTag)
 

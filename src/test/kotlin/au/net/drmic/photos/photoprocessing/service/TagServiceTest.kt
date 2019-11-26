@@ -19,6 +19,8 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
 import java.sql.Date
 import java.sql.Timestamp
+import java.time.LocalDate
+import java.time.LocalTime
 import javax.sql.rowset.serial.SerialBlob
 
 @RunWith(SpringRunner::class)
@@ -45,26 +47,29 @@ class TagServiceTest : FunSpec() {
     override fun beforeTest(testCase: TestCase) {
         val ownerUserId = 1L
 
+        val dateNow = LocalDate.now()
+        val timeNow = LocalTime.now()
+
         photoOne.photoType = PhotoType.PNG
-        photoOne.datePhotoWasTaken = Date(java.util.Date().time)
+        photoOne.datePhotoWasTaken = dateNow
         photoOne.ownerUserId = ownerUserId
         photoOne.description = "A spiffy trekking photo"
-        photoOne.imageOriginal = SerialBlob(ByteArray(500))
-        photoOne.imageCroppedThumbnail = SerialBlob(ByteArray(500) )
-        photoOne.imageCroppedStandard = SerialBlob(ByteArray(7000))
-        photoOne.dateTimeCreated = Timestamp(java.util.Date().time)
-        photoOne.dateTimeUpdated = Timestamp(java.util.Date().time)
+        photoOne.setImageOriginal(SerialBlob(ByteArray(500)))
+        photoOne.setImageCroppedThumbnail(SerialBlob(ByteArray(500)))
+        photoOne.setImageCroppedStandard(SerialBlob(ByteArray(7000)))
+        photoOne.dateTimeCreated = timeNow
+        photoOne.dateTimeUpdated = timeNow
         photoOne = photosRepository.save(photoOne)
 
         photoTwo.photoType = PhotoType.PNG
-        photoTwo.datePhotoWasTaken = Date(java.util.Date().time)
+        photoTwo.datePhotoWasTaken = dateNow
         photoTwo.ownerUserId = ownerUserId
         photoTwo.description = "Another spiffy trekking photo"
-        photoTwo.imageOriginal = SerialBlob(ByteArray(487))
-        photoTwo.imageCroppedThumbnail = SerialBlob(ByteArray(5205) )
-        photoTwo.imageCroppedStandard = SerialBlob(ByteArray(8321))
-        photoTwo.dateTimeCreated = Timestamp(java.util.Date().time)
-        photoTwo.dateTimeUpdated = Timestamp(java.util.Date().time)
+        photoTwo.setImageOriginal(SerialBlob(ByteArray(487)))
+        photoTwo.setImageCroppedThumbnail(SerialBlob(ByteArray(5205)))
+        photoTwo.setImageCroppedStandard(SerialBlob(ByteArray(8321)))
+        photoTwo.dateTimeCreated = timeNow
+        photoTwo.dateTimeUpdated = timeNow
         photoTwo = photosRepository.save(photoTwo)
 
         val tagsForPhotoOne = mutableListOf<String>()

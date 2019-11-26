@@ -28,8 +28,8 @@ class PhotosProcessingController {
                         "via the user's id.")
     @RequestMapping("/owner/{ownerUserId}", method = [ RequestMethod.GET ])
     fun retrievePhotosByOwner(@ApiParam("The user id of the photo's owner.")
-                              @PathVariable("ownerUserId", required = true) ownerUserId: Long): List<Photos> {
-        return photosService.retrievePhotosByOwner(ownerUserId)
+                              @PathVariable("ownerUserId", required = true) ownerUserId: Long): ResponseEntity<List<Photos>> {
+        return ResponseEntity.ok(photosService.retrievePhotosByOwner(ownerUserId))
     }
 
     @ApiOperation("Retrieve an existing photo, including associated meta-data, via its id.")

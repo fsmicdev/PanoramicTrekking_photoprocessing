@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: photoprocessingservice
+
+server:
+  port: 8080
+  servlet:
+    contextPath: /photoprocessingservice
+
+user:
+  timezone: UTC
+
+logging:
+  level:
+    web: DEBUG

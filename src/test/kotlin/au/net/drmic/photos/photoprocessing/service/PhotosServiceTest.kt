@@ -17,8 +17,8 @@ import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
-import java.sql.Date
-import java.sql.Timestamp
+import java.time.LocalDate
+import java.time.LocalTime
 import javax.sql.rowset.serial.SerialBlob
 
 const val TAG_ONE = "SOME_TAG"
@@ -48,67 +48,67 @@ class PhotosServiceTest : FunSpec() {
     override fun beforeTest(testCase: TestCase) {
         var photoOne = Photos()
         photoOne.photoType = PhotoType.PNG
-        photoOne.datePhotoWasTaken = Date(java.util.Date().time)
+        photoOne.datePhotoWasTaken = LocalDate.now()
         photoOne.ownerUserId = 1L
         photoOne.description = "A spiffy trekking photo"
-        photoOne.imageOriginal = SerialBlob(ByteArray(500))
-        photoOne.imageCroppedThumbnail = SerialBlob(ByteArray(500) )
-        photoOne.imageCroppedStandard = SerialBlob(ByteArray(7000))
-        photoOne.dateTimeCreated = Timestamp(java.util.Date().time)
-        photoOne.dateTimeUpdated = Timestamp(java.util.Date().time)
+        photoOne.setImageOriginal(SerialBlob(ByteArray(500)))
+        photoOne.setImageCroppedThumbnail(SerialBlob(ByteArray(500)))
+        photoOne.setImageCroppedStandard(SerialBlob(ByteArray(7000)))
+        photoOne.dateTimeCreated = LocalTime.now()
+        photoOne.dateTimeUpdated = LocalTime.now()
 
         photoOne = photosRepository.save(photoOne)
 
         var photoTwo = Photos()
         photoTwo.photoType = PhotoType.PNG
-        photoTwo.datePhotoWasTaken = Date(java.util.Date().time)
+        photoTwo.datePhotoWasTaken = LocalDate.now()
         photoTwo.ownerUserId = 1L
         photoTwo.description = "Another spiffy trekking photo"
-        photoTwo.imageOriginal = SerialBlob(ByteArray(487))
-        photoTwo.imageCroppedThumbnail = SerialBlob(ByteArray(5205) )
-        photoTwo.imageCroppedStandard = SerialBlob(ByteArray(8321))
-        photoTwo.dateTimeCreated = Timestamp(java.util.Date().time)
-        photoTwo.dateTimeUpdated = Timestamp(java.util.Date().time)
+        photoTwo.setImageOriginal(SerialBlob(ByteArray(487)))
+        photoTwo.setImageCroppedThumbnail(SerialBlob(ByteArray(5205)))
+        photoTwo.setImageCroppedStandard(SerialBlob(ByteArray(8321)))
+        photoTwo.dateTimeCreated = LocalTime.now()
+        photoTwo.dateTimeUpdated = LocalTime.now()
 
         photoTwo = photosRepository.save(photoTwo)
 
         var tagOneForUserOne = Tag()
         tagOneForUserOne.tagWord = TAG_ONE
         tagOneForUserOne.ownerUserId = 1
-        tagOneForUserOne.dateTimeCreated = Timestamp(java.util.Date().time)
-        tagOneForUserOne.dateTimeUpdated = Timestamp(java.util.Date().time)
+        tagOneForUserOne.dateTimeCreated = LocalTime.now()
+        tagOneForUserOne.dateTimeUpdated = LocalTime.now()
 
         tagOneForUserOne = tagRepository.save(tagOneForUserOne)
 
         var tagTwoForUserOne = Tag()
         tagTwoForUserOne.tagWord = TAG_TWO
         tagTwoForUserOne.ownerUserId = 1
-        tagTwoForUserOne.dateTimeCreated = Timestamp(java.util.Date().time)
-        tagTwoForUserOne.dateTimeUpdated = Timestamp(java.util.Date().time)
+        tagTwoForUserOne.dateTimeCreated = LocalTime.now()
+        tagTwoForUserOne.dateTimeUpdated = LocalTime.now()
 
         tagTwoForUserOne = tagRepository.save(tagTwoForUserOne)
         
         var photoOneTagOneForUserOne = PhotosTag()
         photoOneTagOneForUserOne.photo = photoOne
         photoOneTagOneForUserOne.tag = tagOneForUserOne
-        photoOneTagOneForUserOne.dateTimeCreated = Timestamp(java.util.Date().time)
-        photoOneTagOneForUserOne.dateTimeUpdated = Timestamp(java.util.Date().time)
+        photoOneTagOneForUserOne.dateTimeCreated = LocalTime.now()
+        photoOneTagOneForUserOne.dateTimeUpdated = LocalTime.now()
 
         photoOneTagOneForUserOne = photosTagRepository.save(photoOneTagOneForUserOne)
 
         var photoOneTagTwoForUserOne = PhotosTag()
         photoOneTagTwoForUserOne.photo = photoOne
         photoOneTagTwoForUserOne.tag = tagTwoForUserOne
-        photoOneTagTwoForUserOne.dateTimeCreated = Timestamp(java.util.Date().time)
-        photoOneTagTwoForUserOne.dateTimeUpdated = Timestamp(java.util.Date().time)
+        photoOneTagTwoForUserOne.dateTimeCreated = LocalTime.now()
+        photoOneTagTwoForUserOne.dateTimeUpdated = LocalTime.now()
 
         photoOneTagTwoForUserOne = photosTagRepository.save(photoOneTagTwoForUserOne)
 
         var photoTwoTagOneForUserOne = PhotosTag()
         photoTwoTagOneForUserOne.photo = photoTwo
         photoTwoTagOneForUserOne.tag = tagOneForUserOne
-        photoTwoTagOneForUserOne.dateTimeCreated = Timestamp(java.util.Date().time)
-        photoTwoTagOneForUserOne.dateTimeUpdated = Timestamp(java.util.Date().time)
+        photoTwoTagOneForUserOne.dateTimeCreated = LocalTime.now()
+        photoTwoTagOneForUserOne.dateTimeUpdated = LocalTime.now()
 
         photoTwoTagOneForUserOne = photosTagRepository.save(photoTwoTagOneForUserOne)
 
@@ -167,6 +167,7 @@ class PhotosServiceTest : FunSpec() {
             photosService.searchOwnerPhotosByTagFilter(1L,
                     mutableListOf(TAG_ONE, TAG_TWO, NON_EXISTING_TAG)) shouldBe emptySet()
         }
+
     }
 
 }

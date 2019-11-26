@@ -1,6 +1,7 @@
 package au.net.drmic.photos.photoprocessing.repository.entity.support
 
 import java.sql.Timestamp
+import java.time.LocalTime
 import javax.persistence.*
 
 /**
@@ -18,10 +19,10 @@ abstract class JpaPersistCapable {
     var id: Long = 0L
 
     @Column(nullable = false)
-    lateinit var dateTimeCreated: Timestamp
+    lateinit var dateTimeCreated: LocalTime
 
     @Column(nullable = false)
-    lateinit var dateTimeUpdated: Timestamp
+    lateinit var dateTimeUpdated: LocalTime
 
     override fun toString() = "Entity of type [${this.javaClass.name}] has id: [$id]"
 
