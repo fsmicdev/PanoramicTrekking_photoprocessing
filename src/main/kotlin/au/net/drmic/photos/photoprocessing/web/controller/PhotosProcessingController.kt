@@ -56,19 +56,19 @@ class PhotosProcessingController {
                         "'standard' sizes.")
     @RequestMapping("/", method = [ RequestMethod.POST ])
     fun uploadMultipartFile(
-            @ApiParam("The format type of the photo.")
-            @RequestParam("photoType") photoType: PhotoType,
-            @ApiParam("The photo file to be uploaded.")
-            @RequestParam("imageOriginal") imageOriginal: MultipartFile,
-            @ApiParam("The user id of the photo's owner.")
-            @RequestParam("ownerUserId") ownerUserId: Long,
-            @ApiParam(value="Date photo was taken [ dd.MM.yyyy ].", example = "30.08.2019")
+            @ApiParam("The format type of the photo.", required = true)
+            @RequestParam("photoType", required = true) photoType: PhotoType,
+            @ApiParam("The photo file to be uploaded.", required = true)
+            @RequestParam("imageOriginal", required = true) imageOriginal: MultipartFile,
+            @ApiParam("The user id of the photo's owner.", required = true)
+            @RequestParam("ownerUserId", required = true) ownerUserId: Long,
+            @ApiParam(value="Date photo was taken [ dd.MM.yyyy ].", example = "30.08.2019", required = true)
             @DateTimeFormat(pattern = "dd.MM.yyyy")
-            @RequestParam("datePhotoWasTaken") datePhotoWasTaken: LocalDate,
-            @ApiParam("Narrative on the photo.")
+            @RequestParam("datePhotoWasTaken", required = true) datePhotoWasTaken: LocalDate,
+            @ApiParam("Narrative on the photo.", required = false)
             @RequestParam(value = "description", required = false) description: String,
-            @ApiParam("List of tags/keywords, which can be later searched on.")
-            @RequestParam(value = "tags", required = false) tags: List<String>): ResponseEntity<Long> {
+            @ApiParam("List of tags/keywords, which can be later searched on.", required = true)
+            @RequestParam(value = "tags", required = true) tags: List<String>): ResponseEntity<Long> {
         val photo = photosService.saveFileUploadPhoto(
                 photoType, imageOriginal, ownerUserId, datePhotoWasTaken, description, tags)
 
