@@ -41,7 +41,7 @@ class PhotosProcessingController {
         if (photo.isPresent) {
             return ResponseEntity.ok(photo.get())
         } else {
-            return ResponseEntity(null, null, HttpStatus.NOT_FOUND)
+            return ResponseEntity<Photos>(null, null, HttpStatus.NOT_FOUND)
         }
     }
 
