@@ -10,6 +10,12 @@ server:
 user:
   timezone: UTC
 
+hibernate:
+  hbm2ddl:
+    auto: update
+  dialect: org.hibernate.dialect.PostgreSQLDialect
+  show_sql: true
+
 logging:
   level:
     web: DEBUG

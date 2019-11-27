@@ -1,6 +1,6 @@
 package au.net.drmic.photos.photoprocessing.repository.entity
 
-import au.net.drmic.photos.photoprocessing.repository.entity.support.JpaPersistCapable
+import au.net.drmic.commonsupport.persistence.jpa.JpaPersistCapable
 import javax.persistence.*
 
 @Entity
