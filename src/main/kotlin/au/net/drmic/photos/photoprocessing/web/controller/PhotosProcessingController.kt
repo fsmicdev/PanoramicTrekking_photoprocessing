@@ -27,14 +27,14 @@ class PhotosProcessingController {
     @ApiOperation("Retrieve all photos (including associated meta-data) of a particular user, looked-up " +
                         "via the user's id.")
     @RequestMapping("/owner/{ownerUserId}", method = [ RequestMethod.GET ])
-    fun retrievePhotosByOwner(@ApiParam("The user id of the photo's owner.")
+    fun retrievePhotosByOwner(@ApiParam("The user id of the photo's owner.", required = true)
                               @PathVariable("ownerUserId", required = true) ownerUserId: Long): ResponseEntity<List<Photos>> {
         return ResponseEntity.ok(photosService.retrievePhotosByOwner(ownerUserId))
     }
 
     @ApiOperation("Retrieve an existing photo, including associated meta-data, via its id.")
     @RequestMapping("/{photoId}", method = [ RequestMethod.GET ])
-    fun retrievePhotoById(@ApiParam("The id of the photo.")
+    fun retrievePhotoById(@ApiParam("The id of the photo.", required = true)
                           @PathVariable("photoId", required = true) photoId: Long): ResponseEntity<Photos> {
         val photo = photosService.retrievePhotoById(photoId)
 
@@ -47,7 +47,7 @@ class PhotosProcessingController {
 
     @ApiOperation("Update an existing photo, including associated meta-data.")
     @RequestMapping("/", method = [ RequestMethod.PUT ])
-    fun updatePhoto(@RequestBody photo: Photos): ResponseEntity<Photos> {
+    fun updatePhoto(@RequestBody(required = true) photo: Photos): ResponseEntity<Photos> {
         return ResponseEntity.ok(photosService.updatePhoto(photo))
     }
 
@@ -65,8 +65,8 @@ class PhotosProcessingController {
             @ApiParam(value="Date photo was taken [ dd.MM.yyyy ].", example = "30.08.2019", required = true)
             @DateTimeFormat(pattern = "dd.MM.yyyy")
             @RequestParam("datePhotoWasTaken", required = true) datePhotoWasTaken: LocalDate,
-            @ApiParam("Narrative on the photo.", required = false)
-            @RequestParam(value = "description", required = false) description: String,
+            @ApiParam("Narrative on the photo.", required = true)
+            @RequestParam(value = "description", required = true) description: String,
             @ApiParam("List of tags/keywords, which can be later searched on.", required = true)
             @RequestParam(value = "tags", required = true) tags: List<String>): ResponseEntity<Long> {
         val photo = photosService.saveFileUploadPhoto(
@@ -74,7 +74,7 @@ class PhotosProcessingController {
 
         var fileName = imageOriginal.getOriginalFilename()
 
-        logger.info("File uploaded successfully! -> filename = " + fileName)
+        logger.info("File uploaded successfully! -> filename = {}", fileName)
 
         return ResponseEntity.ok(photo.id)
     }

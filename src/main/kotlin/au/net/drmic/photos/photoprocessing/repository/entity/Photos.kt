@@ -1,7 +1,7 @@
 package au.net.drmic.photos.photoprocessing.repository.entity;
 
+import au.net.drmic.commonsupport.persistence.jpa.JpaPersistCapable
 import au.net.drmic.photos.photoprocessing.model.PhotoType
-import au.net.drmic.photos.photoprocessing.repository.entity.support.JpaPersistCapable
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
