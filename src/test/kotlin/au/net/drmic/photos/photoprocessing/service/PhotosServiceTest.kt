@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
 import java.time.LocalDate
-import java.time.LocalTime
+import java.time.LocalDateTime
 import javax.sql.rowset.serial.SerialBlob
 
 const val TAG_ONE = "SOME_TAG"
@@ -46,6 +46,8 @@ class PhotosServiceTest : FunSpec() {
     private lateinit var photosTagRepository: PhotosTagRepository
 
     override fun beforeTest(testCase: TestCase) {
+        var dateTimeNow = LocalDateTime.now()
+
         var photoOne = Photos()
         photoOne.photoType = PhotoType.PNG
         photoOne.datePhotoWasTaken = LocalDate.now()
@@ -54,8 +56,8 @@ class PhotosServiceTest : FunSpec() {
         photoOne.setImageOriginal(SerialBlob(ByteArray(500)))
         photoOne.setImageCroppedThumbnail(SerialBlob(ByteArray(500)))
         photoOne.setImageCroppedStandard(SerialBlob(ByteArray(7000)))
-        photoOne.dateTimeCreated = LocalTime.now()
-        photoOne.dateTimeUpdated = LocalTime.now()
+        photoOne.dateTimeCreated = dateTimeNow
+        photoOne.dateTimeUpdated = dateTimeNow
 
         photoOne = photosRepository.save(photoOne)
 
@@ -67,48 +69,48 @@ class PhotosServiceTest : FunSpec() {
         photoTwo.setImageOriginal(SerialBlob(ByteArray(487)))
         photoTwo.setImageCroppedThumbnail(SerialBlob(ByteArray(5205)))
         photoTwo.setImageCroppedStandard(SerialBlob(ByteArray(8321)))
-        photoTwo.dateTimeCreated = LocalTime.now()
-        photoTwo.dateTimeUpdated = LocalTime.now()
+        photoTwo.dateTimeCreated = dateTimeNow
+        photoTwo.dateTimeUpdated = dateTimeNow
 
         photoTwo = photosRepository.save(photoTwo)
 
         var tagOneForUserOne = Tag()
         tagOneForUserOne.tagWord = TAG_ONE
         tagOneForUserOne.ownerUserId = 1
-        tagOneForUserOne.dateTimeCreated = LocalTime.now()
-        tagOneForUserOne.dateTimeUpdated = LocalTime.now()
+        tagOneForUserOne.dateTimeCreated = dateTimeNow
+        tagOneForUserOne.dateTimeUpdated = dateTimeNow
 
         tagOneForUserOne = tagRepository.save(tagOneForUserOne)
 
         var tagTwoForUserOne = Tag()
         tagTwoForUserOne.tagWord = TAG_TWO
         tagTwoForUserOne.ownerUserId = 1
-        tagTwoForUserOne.dateTimeCreated = LocalTime.now()
-        tagTwoForUserOne.dateTimeUpdated = LocalTime.now()
+        tagTwoForUserOne.dateTimeCreated = dateTimeNow
+        tagTwoForUserOne.dateTimeUpdated = dateTimeNow
 
         tagTwoForUserOne = tagRepository.save(tagTwoForUserOne)
         
         var photoOneTagOneForUserOne = PhotosTag()
         photoOneTagOneForUserOne.photo = photoOne
         photoOneTagOneForUserOne.tag = tagOneForUserOne
-        photoOneTagOneForUserOne.dateTimeCreated = LocalTime.now()
-        photoOneTagOneForUserOne.dateTimeUpdated = LocalTime.now()
+        photoOneTagOneForUserOne.dateTimeCreated = dateTimeNow
+        photoOneTagOneForUserOne.dateTimeUpdated = dateTimeNow
 
         photoOneTagOneForUserOne = photosTagRepository.save(photoOneTagOneForUserOne)
 
         var photoOneTagTwoForUserOne = PhotosTag()
         photoOneTagTwoForUserOne.photo = photoOne
         photoOneTagTwoForUserOne.tag = tagTwoForUserOne
-        photoOneTagTwoForUserOne.dateTimeCreated = LocalTime.now()
-        photoOneTagTwoForUserOne.dateTimeUpdated = LocalTime.now()
+        photoOneTagTwoForUserOne.dateTimeCreated = dateTimeNow
+        photoOneTagTwoForUserOne.dateTimeUpdated = dateTimeNow
 
         photoOneTagTwoForUserOne = photosTagRepository.save(photoOneTagTwoForUserOne)
 
         var photoTwoTagOneForUserOne = PhotosTag()
         photoTwoTagOneForUserOne.photo = photoTwo
         photoTwoTagOneForUserOne.tag = tagOneForUserOne
-        photoTwoTagOneForUserOne.dateTimeCreated = LocalTime.now()
-        photoTwoTagOneForUserOne.dateTimeUpdated = LocalTime.now()
+        photoTwoTagOneForUserOne.dateTimeCreated = dateTimeNow
+        photoTwoTagOneForUserOne.dateTimeUpdated = dateTimeNow
 
         photoTwoTagOneForUserOne = photosTagRepository.save(photoTwoTagOneForUserOne)
 

@@ -2,11 +2,8 @@ package au.net.drmic.photos.photoprocessing.service
 
 import au.net.drmic.photos.photoprocessing.model.PhotoType
 import au.net.drmic.photos.photoprocessing.repository.PhotosRepository
-import au.net.drmic.photos.photoprocessing.repository.PhotosTagRepository
 import au.net.drmic.photos.photoprocessing.repository.TagRepository
 import au.net.drmic.photos.photoprocessing.repository.entity.Photos
-import au.net.drmic.photos.photoprocessing.repository.entity.PhotosTag
-import au.net.drmic.photos.photoprocessing.repository.entity.Tag
 import io.kotlintest.TestCase
 import io.kotlintest.TestResult
 import io.kotlintest.extensions.TestListener
@@ -20,6 +17,7 @@ import org.springframework.test.context.junit4.SpringRunner
 import java.sql.Date
 import java.sql.Timestamp
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 import javax.sql.rowset.serial.SerialBlob
 
@@ -48,7 +46,7 @@ class TagServiceTest : FunSpec() {
         val ownerUserId = 1L
 
         val dateNow = LocalDate.now()
-        val timeNow = LocalTime.now()
+        val dateTimeNow = LocalDateTime.now()
 
         photoOne.photoType = PhotoType.PNG
         photoOne.datePhotoWasTaken = dateNow
@@ -57,8 +55,8 @@ class TagServiceTest : FunSpec() {
         photoOne.setImageOriginal(SerialBlob(ByteArray(500)))
         photoOne.setImageCroppedThumbnail(SerialBlob(ByteArray(500)))
         photoOne.setImageCroppedStandard(SerialBlob(ByteArray(7000)))
-        photoOne.dateTimeCreated = timeNow
-        photoOne.dateTimeUpdated = timeNow
+        photoOne.dateTimeCreated = dateTimeNow
+        photoOne.dateTimeUpdated = dateTimeNow
         photoOne = photosRepository.save(photoOne)
 
         photoTwo.photoType = PhotoType.PNG
@@ -68,8 +66,8 @@ class TagServiceTest : FunSpec() {
         photoTwo.setImageOriginal(SerialBlob(ByteArray(487)))
         photoTwo.setImageCroppedThumbnail(SerialBlob(ByteArray(5205)))
         photoTwo.setImageCroppedStandard(SerialBlob(ByteArray(8321)))
-        photoTwo.dateTimeCreated = timeNow
-        photoTwo.dateTimeUpdated = timeNow
+        photoTwo.dateTimeCreated = dateTimeNow
+        photoTwo.dateTimeUpdated = dateTimeNow
         photoTwo = photosRepository.save(photoTwo)
 
         val tagsForPhotoOne = mutableListOf<String>()

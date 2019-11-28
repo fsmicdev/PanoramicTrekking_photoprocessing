@@ -21,6 +21,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.sql.Blob
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.stream.Collectors
 
@@ -100,7 +101,7 @@ class PhotosService {
 
         imageOriginal.transferTo(tmpOriginalUploadedImageFile)
 
-        val timeNow = LocalTime.now()
+        val timeNow = LocalDateTime.now()
 
         photos.photoType = photoType
         photos.ownerUserId = ownerUserId

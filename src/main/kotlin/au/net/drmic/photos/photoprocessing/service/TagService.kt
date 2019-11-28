@@ -8,6 +8,7 @@ import org.slf4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.sql.Timestamp
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.*
 
@@ -34,7 +35,7 @@ class TagService {
             if ( ! isTagPreExisting ) {
                 val timestampNow = Timestamp(Date().time)
 
-                val timeNow = LocalTime.now()
+                val timeNow = LocalDateTime.now()
 
                 val tag = Tag()
                 tag.ownerUserId = ownerUserId

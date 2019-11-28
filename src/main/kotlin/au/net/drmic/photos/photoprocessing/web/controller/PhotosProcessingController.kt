@@ -15,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDate
 
 @RestController
-@RequestMapping("apis/photos/photo")
+@RequestMapping("apis/photos")
 class PhotosProcessingController {
 
     @Autowired
