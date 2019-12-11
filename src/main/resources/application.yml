@@ -1,6 +1,14 @@
 spring:
   application:
     name: photoprocessingservice
+    datasource:
+      url: jdbc:h2:mem:testdb
+      driverClassName: org.h2.Driver
+      username: sa
+      password: password
+  h2:
+    console:
+      enabled: true
 
 server:
   port: 8080
@@ -13,9 +21,19 @@ user:
 hibernate:
   hbm2ddl:
     auto: update
-  dialect: org.hibernate.dialect.PostgreSQLDialect
+    dialect: org.hibernate.dialect.H2Dialect
+#   dialect: org.hibernate.dialect.PostgreSQLDialect
   show_sql: true
 
 logging:
   level:
     web: DEBUG
+
+
+# Test localhost properties
+
+#     spring.datasource.url=jdbc:h2:mem:testdb
+#     spring.datasource.driverClassName=org.h2.Driver
+#    spring.datasource.username=sa
+#     spring.datasource.password=password
+#     spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
