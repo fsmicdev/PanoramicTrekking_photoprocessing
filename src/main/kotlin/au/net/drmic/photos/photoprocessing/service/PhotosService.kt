@@ -22,7 +22,6 @@ import java.nio.file.Paths
 import java.sql.Blob
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.LocalTime
 import java.util.stream.Collectors
 
 @Service
@@ -99,7 +98,7 @@ class PhotosService {
 
         val photoByteArray = imageOriginal.bytes
 
-        imageOriginal.transferTo(tmpOriginalUploadedImageFile)
+        imageOriginal.transferTo(tmpOriginalUploadedImageFile.toPath())
 
         val timeNow = LocalDateTime.now()
 
@@ -134,7 +133,7 @@ class PhotosService {
 
         val genCroppedFile = scale(originalBufferedImage, photoSize, photoNameWithSize, photoType)
 
-        val generatedBlob = SerialBlob(convertFileContentToBlob(genCroppedFile.path))
+        val generatedBlob = SerialBlob(convertFileContentToByteArray(genCroppedFile.path))
         logger.info(">>> Created blob " + generatedBlob + " for photoName[" + photoNameWithSize +
                 "] of photoType[" + photoType + "]")
 
@@ -142,7 +141,7 @@ class PhotosService {
     }
 
     @Throws(IOException::class)
-    fun convertFileContentToBlob(filePathStr: String): ByteArray {
+    fun convertFileContentToByteArray(filePathStr: String): ByteArray {
         val filePath = Paths.get(filePathStr)
 
         return Files.readAllBytes(filePath)

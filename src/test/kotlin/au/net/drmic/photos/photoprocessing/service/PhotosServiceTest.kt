@@ -7,24 +7,34 @@ import au.net.drmic.photos.photoprocessing.repository.TagRepository
 import au.net.drmic.photos.photoprocessing.repository.entity.Photos
 import au.net.drmic.photos.photoprocessing.repository.entity.PhotosTag
 import au.net.drmic.photos.photoprocessing.repository.entity.Tag
-import io.kotlintest.TestCase
-import io.kotlintest.TestResult
+import io.kotlintest.*
 import io.kotlintest.extensions.TestListener
-import io.kotlintest.shouldBe
+import io.kotlintest.matchers.date.shouldBeBefore
 import io.kotlintest.specs.FunSpec
 import io.kotlintest.spring.SpringListener
+import org.apache.commons.fileupload.FileItem
+import org.apache.commons.fileupload.disk.DiskFileItem
+import org.apache.commons.io.IOUtils
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
+import org.springframework.web.multipart.MultipartFile
+import org.springframework.web.multipart.commons.CommonsMultipartFile
+import java.io.*
+import java.io.File.createTempFile
+import java.nio.file.Files
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.*
 import javax.sql.rowset.serial.SerialBlob
+
 
 const val TAG_ONE = "SOME_TAG"
 const val TAG_TWO = "ANOTHER_TAG"
 const val NON_EXISTING_TAG = "NON_EXISTING_TAG"
 
+@ExperimentalStdlibApi
 @RunWith(SpringRunner::class)
 @SpringBootTest
 class PhotosServiceTest : FunSpec() {
@@ -32,6 +42,8 @@ class PhotosServiceTest : FunSpec() {
     override fun listeners(): List<TestListener> {
         return listOf(SpringListener)
     }
+
+    lateinit var photoOne : Photos
 
     @Autowired
     private lateinit var photosService: PhotosService
@@ -48,7 +60,7 @@ class PhotosServiceTest : FunSpec() {
     override fun beforeTest(testCase: TestCase) {
         var dateTimeNow = LocalDateTime.now()
 
-        var photoOne = Photos()
+        photoOne = Photos()
         photoOne.photoType = PhotoType.PNG
         photoOne.datePhotoWasTaken = LocalDate.now()
         photoOne.ownerUserId = 1L
@@ -123,6 +135,21 @@ class PhotosServiceTest : FunSpec() {
     }
 
     init {
+        test("retrievePhotoById(..): Non-existing photo [id]; should return Optional.empty") {
+            photosService.retrievePhotoById(999L) shouldBe Optional.empty()
+        }
+
+        test("retrievePhotoById(..): Existing photo [id]; should return photo") {
+            val photo = photosService.retrievePhotoById(photoOne.id).get()
+
+            photo.photoType shouldBe PhotoType.PNG
+            photo.datePhotoWasTaken shouldBe LocalDate.now()
+            photo.ownerUserId shouldBe 1L
+            photo.description shouldBe "A spiffy trekking photo"
+            photo.dateTimeCreated shouldBeBefore LocalDateTime.now()
+            photo.dateTimeUpdated shouldBeBefore LocalDateTime.now()
+        }
+
         test("retrievePhotosByOwner(..): No photos returned for non-existing owner.") {
             photosService.retrievePhotosByOwner(514L) shouldBe emptyList()
         }
@@ -170,6 +197,83 @@ class PhotosServiceTest : FunSpec() {
                     mutableListOf(TAG_ONE, TAG_TWO, NON_EXISTING_TAG)) shouldBe emptySet()
         }
 
+        test("convertFileContentToByteArray(..): Non-existing file - throws java.nio.file.NoSuchFileException") {
+            shouldThrow<java.nio.file.NoSuchFileException> {
+                photosService.convertFileContentToByteArray("Z:/Unfound/notbelievable.png")
+            }
+        }
+
+        test("convertFileContentToByteArray(..): Existing file - converts to ByteArray") {
+            val tmpFile : File = createTempFile("temp", "txt")
+            val tmpFilePath = tmpFile.getAbsolutePath()
+            tmpFile.deleteOnExit()
+
+            val data = "Temp test data written only..."
+
+            try {
+                BufferedWriter(FileWriter(tmpFile)).use { writer ->
+                    writer.write(data)
+                }
+            } catch (e: IOException) {
+                fail("Should not be exception")
+            }
+
+            val fileBytes = photosService.convertFileContentToByteArray(tmpFilePath)
+            fileBytes.size shouldNotBe 0
+            fileBytes.size shouldBe data.length
+        }
+
+        /*
+        test("saveFileUploadPhoto(..): with 2 tags - creates file with 2 tags") {
+            val tags = ArrayList<String>()
+            tags.add("Uno")
+            tags.add("Duo")
+
+            val tmpFile : File = createTempFile("temp", ".txt")
+            val tmpFilePath = tmpFile.getAbsolutePath()
+            //tmpFile.deleteOnExit()
+
+            val bufWrit = BufferedWriter(FileWriter(tmpFile))
+
+            try {
+                bufWrit.write("Some Text")
+                bufWrit.flush()
+                bufWrit.close()
+
+                val file = File(tmpFilePath)
+                val fileItem: FileItem = DiskFileItem("mainFile", Files.probeContentType(file.toPath()),
+                        false, file.name, file.length().toInt(), file.parentFile)
+
+                try {
+                    val input: InputStream = FileInputStream(file)
+                    val os = fileItem.outputStream
+                    IOUtils.copy(input, os)
+                } catch (ex: IOException) { // do something.
+                }
+
+                val multipartFile: MultipartFile = CommonsMultipartFile(fileItem)
+
+                val photo = photosService.saveFileUploadPhoto(
+                        PhotoType.PNG,
+                        multipartFile,
+                        1L,
+                        LocalDate.now(),
+                        "Some desc",
+                        tags)
+
+                photo shouldNotBe null
+                photo.description shouldBe "Some desc"
+                photo.getPhotoTags().size shouldBe 2
+                photo.datePhotoWasTaken shouldBe LocalDate.now()
+                photo.dateTimeUpdated shouldBeBefore LocalDateTime.now()
+                photo.dateTimeCreated shouldBeBefore LocalDateTime.now()
+            } catch (e: IOException) {
+                fail("Should not be exception")
+            } finally {
+
+            }
+        }
+        */
     }
 
 }
