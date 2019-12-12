@@ -76,7 +76,6 @@ class TagServiceTest : FunSpec() {
         tagsForPhotoOne.add("SQUARE")
 
         tagService.saveTags(ownerUserId, tagsForPhotoOne, photoOne)
-
     }
 
     override fun afterTest(testCase: TestCase, result: TestResult) {

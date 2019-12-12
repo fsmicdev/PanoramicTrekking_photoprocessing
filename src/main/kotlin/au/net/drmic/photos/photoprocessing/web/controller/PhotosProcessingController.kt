@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDate
 
+@CrossOrigin(origins = [ "http://localhost:4200" ])
 @RestController
 @RequestMapping("apis/photos")
 class PhotosProcessingController {

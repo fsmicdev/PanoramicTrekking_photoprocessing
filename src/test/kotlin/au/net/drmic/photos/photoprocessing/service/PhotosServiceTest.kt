@@ -18,6 +18,11 @@ import org.apache.commons.io.IOUtils
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.core.io.ClassPathResource
+import org.springframework.jdbc.datasource.init.ScriptUtils
+import org.springframework.test.context.jdbc.Sql
+import org.springframework.test.context.jdbc.SqlConfig
+import org.springframework.test.context.jdbc.SqlGroup
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.commons.CommonsMultipartFile
@@ -27,6 +32,7 @@ import java.nio.file.Files
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
+import javax.sql.DataSource
 import javax.sql.rowset.serial.SerialBlob
 
 
@@ -34,9 +40,11 @@ const val TAG_ONE = "SOME_TAG"
 const val TAG_TWO = "ANOTHER_TAG"
 const val NON_EXISTING_TAG = "NON_EXISTING_TAG"
 
-@ExperimentalStdlibApi
 @RunWith(SpringRunner::class)
 @SpringBootTest
+// @SqlGroup(
+//         Sql("/classpath:loadTestData.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
+//        Sql("/test-user-data.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD))
 class PhotosServiceTest : FunSpec() {
 
     override fun listeners(): List<TestListener> {
@@ -57,7 +65,14 @@ class PhotosServiceTest : FunSpec() {
     @Autowired
     private lateinit var photosTagRepository: PhotosTagRepository
 
+    @Autowired
+    private lateinit var dataSource: DataSource
+
     override fun beforeTest(testCase: TestCase) {
+        // ScriptUtils.executeSqlScript(dataSource.connection, ClassPathResource("cleanupTestData.sql"));
+
+        // ScriptUtils.executeSqlScript(dataSource.connection, ClassPathResource("loadTestData.sql"));
+
         var dateTimeNow = LocalDateTime.now()
 
         photoOne = Photos()
@@ -132,6 +147,8 @@ class PhotosServiceTest : FunSpec() {
     override fun afterTest(testCase: TestCase, result: TestResult) {
         photosTagRepository.deleteAll()
         photosRepository.deleteAll()
+
+        // ScriptUtils.executeSqlScript(dataSource.connection, ClassPathResource("cleanupTestData.sql"));
     }
 
     init {
