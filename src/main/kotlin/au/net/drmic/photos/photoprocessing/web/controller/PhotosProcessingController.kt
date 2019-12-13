@@ -1,5 +1,6 @@
 package au.net.drmic.photos.photoprocessing.web.controller
 
+import au.net.drmic.commonsupport.exception.BusinessValidationException
 import au.net.drmic.photos.photoprocessing.model.PhotoType
 import au.net.drmic.photos.photoprocessing.repository.entity.Photos
 import au.net.drmic.photos.photoprocessing.service.PhotosService
@@ -57,8 +58,6 @@ class PhotosProcessingController {
                         "'standard' sizes.")
     @RequestMapping("/", method = [ RequestMethod.POST ])
     fun uploadMultipartFile(
-            @ApiParam("The format type of the photo.", required = true)
-            @RequestParam("photoType", required = true) photoType: PhotoType,
             @ApiParam("The photo file to be uploaded.", required = true)
             @RequestParam("imageOriginal", required = true) imageOriginal: MultipartFile,
             @ApiParam("The user id of the photo's owner.", required = true)
@@ -70,13 +69,33 @@ class PhotosProcessingController {
             @RequestParam(value = "description", required = true) description: String,
             @ApiParam("List of tags/keywords, which can be later searched on.", required = true)
             @RequestParam(value = "tags", required = true) tags: List<String>): ResponseEntity<Long> {
-        val photo = photosService.saveFileUploadPhoto(
-                photoType, imageOriginal, ownerUserId, datePhotoWasTaken, description, tags)
+        // ----->>> N.B. PhotoType can be inferred from imageOriginal MultipartFile suffix <<<-----
+        val photosFilename = imageOriginal.originalFilename!!
+        logger.info(">>>>> photosFilename: ", photosFilename)
+        val lastIndexOfDotSeparator = photosFilename.lastIndexOf(".")
 
-        var fileName = imageOriginal.getOriginalFilename()
+        var photoType: PhotoType? = null
 
-        logger.info("File uploaded successfully! -> filename = {}", fileName)
+        if (lastIndexOfDotSeparator != -1) {
+            val photosFileSuffixUpper = photosFilename.substring(lastIndexOfDotSeparator + 1).toUpperCase().trim()
 
-        return ResponseEntity.ok(photo.id)
+            photoType = PhotoType.valueOf(photosFileSuffixUpper)
+        }
+
+        logger.info(">>> >>> >>> Inferred photoType: " + photoType)
+
+        if (photoType!= null) {
+            val photo = photosService.saveFileUploadPhoto(
+                    photoType, imageOriginal, ownerUserId, datePhotoWasTaken, description, tags)
+
+            var fileName = imageOriginal.getOriginalFilename()
+
+            logger.info("File uploaded successfully! -> filename = {}", fileName)
+
+            return ResponseEntity.ok(photo.id)
+        } else {
+            throw BusinessValidationException("Cannot infer the photo's type from its filename - MUST BE one of " +
+                                              "*.JPG, *.JPEG, *.PNG, *.BMP, *.GIF")
+        }
     }
 }
