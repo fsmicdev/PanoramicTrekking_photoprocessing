@@ -143,11 +143,11 @@ SELECT pg_catalog.setval('pt_photos_processed.photos_tag_id_seq', 1, false);
 SELECT pg_catalog.setval('pt_photos_processed.tag_id_seq', 1, false);
 
 
-ALTER TABLE ONLY pt_photos_processed.photos
+ALTER TABLE pt_photos_processed.photos
     ADD CONSTRAINT photos_pkey PRIMARY KEY (id);
 
 
-ALTER TABLE ONLY pt_photos_processed.photos_tag
+ALTER TABLE pt_photos_processed.photos_tag
     ADD CONSTRAINT photos_tag_pkey PRIMARY KEY (id);
 
 
@@ -156,6 +156,6 @@ ALTER TABLE ONLY pt_photos_processed.tag
     ADD CONSTRAINT tag_pkey PRIMARY KEY (id);
 
 
-ALTER TABLE pt_photos_processed.photos_tag ADD CONSTRAINT photos_fk FOREIGN KEY (photo_id) REFERENCES photos(id);
+ALTER TABLE pt_photos_processed.photos_tag ADD CONSTRAINT photos_fk FOREIGN KEY (photo_id) REFERENCES pt_photos_processed.photos(id);
 
-ALTER TABLE pt_photos_processed.photos_tag ADD CONSTRAINT tag_fk FOREIGN KEY (tag_id) REFERENCES tag(id);
+ALTER TABLE pt_photos_processed.photos_tag ADD CONSTRAINT tag_fk FOREIGN KEY (tag_id) REFERENCES pt_photos_processed.tag(id);

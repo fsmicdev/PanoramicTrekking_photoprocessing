@@ -35,7 +35,6 @@ import java.util.*
 import javax.sql.DataSource
 import javax.sql.rowset.serial.SerialBlob
 
-
 const val TAG_ONE = "SOME_TAG"
 const val TAG_TWO = "ANOTHER_TAG"
 const val NON_EXISTING_TAG = "NON_EXISTING_TAG"
